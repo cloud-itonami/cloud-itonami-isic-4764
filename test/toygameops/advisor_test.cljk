@@ -1,6 +1,6 @@
 (ns toygameops.advisor-test
   "Unit tests of `toygameops.advisor` proposal generation."
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [kotoba.test :refer [deftest is testing]]
             [toygameops.advisor :as adv]
             [toygameops.store :as store]))
 
