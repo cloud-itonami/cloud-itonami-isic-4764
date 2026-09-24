@@ -1,0 +1,32 @@
+;; What this vertical's robot physically does, declared for
+;; kotoba.robotics.process (kotoba-lang/robotics). `kbb -M:dev:physics` runs it.
+;;
+;; README "Robotics premise": a robot may perform the physical work of a
+;; games / toys store (ISIC 4764) -- shelfing, picking, restocking. Here: an
+;; arm putting toy cartons on the top shelf, and a roll cage of toy cartons
+;; from the stockroom -- toy cartons are light but bulky, so the cage is
+;; stacked high (a 1.7 m cage full to the top puts the load CoG near 1.0 m).
+;;
+;; Every number without a cited source is marked `estimate` in its :basis.
+;; Replacing an estimate with a sourced value is this bot's growth work.
+{:physics/schema "itonami.physical-ai.spec.v1"
+ :repo "cloud-itonami/cloud-itonami-isic-4764"
+ :cases
+ [{:id :toy-carton-to-top-shelf
+   :kind :manipulator
+   :procedure "arm lifts a toy carton from the roll cage onto the top shelf of the gondola"
+   :params {:l1-m 0.55 :l2-m 0.50 :m1-kg 4.5 :m2-kg 3.0
+            :from [0.65 0.20] :to [0.25 0.95] :duration-s 2.5 :steps 500}
+   :sweep {:param :payload-kg :values [1.0 3.0 6.0 10.0 15.0]}
+   :quantity :peak-tau1-nm
+   :limit {:max 90.0 :basis "estimate: continuous shoulder torque of a ~7 kg-payload collaborative arm"}
+   :boundary {:lo 0.2 :hi 40.0}}
+  {:id :toy-roll-cage-stack-height
+   :kind :transport
+   :procedure "robot tows a roll cage of 60 kg of toy cartons from the stockroom and makes an emergency stop at 2 m/s2"
+   :params {:mass-kg 35.0 :payload-kg 60.0 :distance-m 40.0 :v-max-mps 1.0 :a-max-mps2 0.5
+            :brake-decel-mps2 2.0 :drive-force-n 200.0 :crr 0.02 :cog-height-m 0.60
+            :support-half-length-m 0.35 :max-time-s 600.0}
+   :sweep {:param :payload-cog-height-m :values [0.40 0.55 0.70 0.85 1.00]}
+   :quantity :min-tipover-margin
+   :limit {:min 0.25 :basis "estimate: keep a 25 % stability reserve for a roll cage under an emergency stop; the 2 m/s2 stop is an estimate too"}}]}
